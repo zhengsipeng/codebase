@@ -1,0 +1,48 @@
+{
+    "train_micro_batch_size_per_gpu": 4,
+    "gradient_accumulation_steps": 1,
+    "steps_per_print": 100,
+
+
+    "zero_optimization": {
+      "stage": 2,
+      "allgather_partitions": true,
+      "allgather_bucket_size": 5e8,
+      "overlap_comm": false,
+      "reduce_scatter": true,
+      "reduce_bucket_size": 5e8,
+      "contiguous_gradients" : false,
+      "stage3_gather_fp16_weights_on_model_save": true
+    },
+
+    "fp16": {
+      "enabled": true,
+      "loss_scale": 0,
+      "loss_scale_window": 1000,
+      "initial_scale_power": 32,
+      "hysteresis": 2,
+      "min_loss_scale": 1
+  },
+
+    "optimizer": {
+        "type": "AdamW",
+        "params": {
+        "lr": 5e-5,
+        "betas": [0.9, 0.98],
+        "eps": 1e-8,
+        "weight_decay": 1e-5
+        }
+    },
+
+
+    "sparse_attention": {
+      "mode": "fixed",
+      "block": 32,
+      "different_layout_per_head": true,
+      "num_local_blocks": 16,
+      "num_global_blocks": 1,
+      "attention": "bidirectional",
+      "horizontal_global_attention": true,
+      "num_different_global_patterns": 4
+    }
+}

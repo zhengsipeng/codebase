@@ -1,0 +1,9 @@
+cls tokens Dropout
+Beam Search
+Nucleus Sample
+Amp Train
+Manual Mask [Done]
+Random shift object input seq [Done]
+
+# HOI
+Random shift object input seq

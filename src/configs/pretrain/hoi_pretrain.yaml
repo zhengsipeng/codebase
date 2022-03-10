@@ -1,0 +1,119 @@
+ImageEncoder: {
+    "backbone": "resnet50",  # vit-b/16, clip, resnet, fromscratch
+    "patchsize": [16, 16],
+    "dilation": false,  # only for resnet
+    "encoder_depth": 6  # only for fromscratch
+}
+
+TextEncoder: {
+  "model": "roberta-large",
+  "freeze_text_encoder": false
+}
+#bert_config: "src/configs/text_encoder/bert_config.json"
+
+Model: {
+  "name": "pretrain",
+  "position_embedding": "sine",  # [sine, learned]
+  "dim_feedforward": 1024,  # Intermediate size of the feedforward layers in the transformer blocks
+  "hidden_dim": 256,  # Size of the embeddings (dimension of the transformer)
+  "encoder_num_heads": 8,
+  "decoder_num_heads": 8,
+  "encoder_depth": 3,
+  "decoder_depth": 3,
+  "pre_norm": false,
+  "dropout": 0.1,
+  "droppath": 0.,  # DropPath applied in the transformer
+  "activation": "relu"
+}
+
+WEIGHTS: 
+    model_weight: ''
+    imgnet_weight: 'project/pretrained/vit/***'
+    pretrained_2d: True
+
+
+DATA:
+    BATCH_SIZE_per_gpu: 4
+    NUM_WORKERS: 8
+    PIN_MEMORY: True
+
+    input_res: [384, 384]
+    center_crop: 300
+    large_scale_jitter: false
+
+    DATASET_train: [{
+            'name': 'COCODataset-train',
+            'type': 'PretrainDataset',
+            'metadata_dir': 'data/pretrain/relation_annotation/coco_hoi_part.json',
+            'image_path': 'data/pretrain/coco/trainval/'
+        },
+        {
+            'name': 'Flickr30kDataset-train',
+            'type': 'PretrainDataset',
+            'metadata_dir': 'data/pretrain/relation_annotation/flickr30k_hoi_part.json',
+            'image_path': 'data/pretrain/flickr30k/flickr30k_images/'
+        },
+        {
+            'name': 'VisualGenomeDataset-train',
+            'type': 'PretrainDataset',
+            'metadata_dir': 'data/pretrain/relation_annotation/vg_hoi_part.json',
+            'image_path': 'data/pretrain/vg/image'
+        },
+        {
+            'name': 'OpenImageDataset-train',
+            'type': 'PretrainDataset',
+            'metadata_dir': 'data/pretrain/relation_annotation/openimage_hoi_part.json',
+            'image_path': 'data/pretrain/openimage/train/'
+        }
+    ]
+    DATASET_val: [{
+            'name': 'VisualGenomeDataset-val',
+            'type': 'PretrainDataset',
+            'metadata_dir': 'data/pretrain/relation_annotation/vg_hoi_part.json',
+            'image_path': 'data/pretrain/vg/image'
+        },
+        ]
+
+TRAINING:
+    EPOCHS: 50
+    WARMUP_EPOCHS: 5
+    WARMUP_LR: 0.
+    LR_SCHEDULER: {
+        'NAME': 'linear',
+        'DECAY_EPOCHS': 5,
+        }
+    is_train: true
+    use_abs_pos: true
+
+    num_dense: 0
+
+    use_global_match: true
+
+    use_dense_match: false
+    use_dense_feat_kd: false
+
+    use_nextevent: true
+    use_mlm: true
+
+    use_tokenlearner: false
+    
+    LOSS:   {
+        'loss_name': "NCEContrastiveLoss",
+        'temp': 0.08 ,
+    }
+
+    weight_decay: 0.005
+
+    save_dir: "project/save_model/pretrain/pretrain_mswin_stage2_wo_dense"
+    checkpoint_step: 10000
+    save_step: 4000
+    print_step: 100
+    eval_step: 2000
+
+HOI:
+  num_obj_classes: 91
+  num_verb_classes: 117
+  num_max_objs: 100
+  num_max_hois: 30
+  pretrain_obj_classes: 5720
+  pretrain_verb_classes: 2270
