@@ -54,29 +54,31 @@ def nms(dets, thresh=0.4, top_k=-1):
 
 
 def eval(segments, data, config):
-    tious = [float(i) for i in config.TEST.TIOU.split(',')] if isinstance(config.TEST.TIOU,str) else [config.TEST.TIOU]
-    recalls = [int(i) for i in config.TEST.RECALL.split(',')] if isinstance(config.TEST.RECALL,str) else [config.TEST.RECALL]
+    
+    tious = [float(i) for i in config.TIOU.split(',')] if isinstance(config.TIOU,str) else [config.TIOU]
+    recalls = [int(i) for i in config.RECALL.split(',')] if isinstance(config.RECALL,str) else [config.RECALL]
 
     eval_result = [[[] for _ in recalls] for _ in tious]
     max_recall = max(recalls)
     average_iou = []
-    for seg, dat in zip(segments, data):
-        seg = nms(seg, thresh=config.TEST.NMS_THRESH, top_k=max_recall).tolist()
+    
+    #assert len(segments) = len(data)
+    for seg, dat in zip(segments, data[:len(segments)]):
+        seg = nms(seg, thresh=config.NMS_THRESH, top_k=max_recall).tolist()
         overlap = iou(seg, [dat['times']])
         average_iou.append(np.mean(np.sort(overlap[0])[-3:]))
-
-        for i,t in enumerate(tious):
-            for j,r in enumerate(recalls):
+        for i, t in enumerate(tious):
+            for j, r in enumerate(recalls):
                 eval_result[i][j].append((overlap > t)[:r].any())
+
     eval_result = np.array(eval_result).mean(axis=-1)
     miou = np.mean(average_iou)
-
 
     return eval_result, miou
 
 
-def eval_predictions(segments, data, verbose=True):
-    eval_result, miou = eval(segments, data)
+def eval_predictions(segments, data, config, verbose=True):
+    eval_result, miou = eval(segments, data, config)
     if verbose:
         print(display_results(eval_result, miou, ''))
 

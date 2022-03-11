@@ -17,6 +17,7 @@ def concat_all_gather(tensor):
     output = torch.cat(tensors_gather, dim=0)
     return output
 
+
 class SyncFunction(torch.autograd.Function):
 
     @staticmethod

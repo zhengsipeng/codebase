@@ -15,7 +15,8 @@ from collections import defaultdict, deque
 
 # needed due to empty tensor bug in pytorch and torchvision 0.5
 import torchvision
-if float(torchvision.__version__[:3]) < 0.7 and torchvision.__version__[:4] != "0.10":
+if float(torchvision.__version__[:3]) < 0.7 and torchvision.__version__[:4] not in ["0.10", "0.11", "0.12"]:
+    import pdb; pdb.set_trace()
     from torchvision.ops import _new_empty_tensor
     from torchvision.ops.misc import _output_size
 

@@ -65,7 +65,7 @@ TRAINING:
         'PATIENCE': 20,
         'CONTINUE': false
         }
-
+    CLIP_GRAD: false
     weight_decay: 0.0000
 
     save_dir: "outputs/tsg/tan/2D-TAN-conv"
@@ -73,6 +73,13 @@ TRAINING:
     save_step: 5000
     print_step: 50
     eval_step: 200
+
+
+TEST:
+  RECALL: 1,5
+  TIOU: 0.3,0.5,0.7
+  EVAL_TRAIN: True
+  NMS_THRESH: 0.5
 
 
 TAN:

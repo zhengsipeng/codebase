@@ -18,13 +18,11 @@ class TAN(nn.Module):
         self.pred_layer = nn.Conv2d(config.TAN.PRED_INPUT_SIZE, 1, 1, 1)
 
     def forward(self, textual_input, textual_mask, visual_input):
-        import pdb; pdb.set_trace()
         vis_h = self.frame_layer(visual_input.transpose(1, 2)) # 8,512,64
         map_h, map_mask = self.prop_layer(vis_h) # 8,512,64,64;  8,1,64,64
         # 8,33,300;  8,33,1
         fused_h = self.fusion_layer(textual_input, textual_mask, map_h, map_mask) # 8,512,64,64
         fused_h = self.map_layer(fused_h, map_mask)
-        
         prediction = self.pred_layer(fused_h) * map_mask  # 8,1,64,64
         
         return prediction, map_mask

@@ -12,14 +12,15 @@ import pdb
 
 
 def collate_fn(batch):
+    batch_word_vectors = [b["word_vectors"] for b in batch]
+    batch_txt_mask = [b["txt_mask"] for b in batch]
+    batch_vis_input = [b["visual_input"] for b in batch]
     batch_word_vectors = nn.utils.rnn.pad_sequence(batch_word_vectors, batch_first=True)
     batch_txt_mask = nn.utils.rnn.pad_sequence(batch_txt_mask, batch_first=True)
-    batch_vis_input = nn.utils.rnn.pad_sequence(batch_vis_feats, batch_first=True).float()
-    batch_word_vectors = default_collate([b['word_vectors'] for b in batch])
-    batch_txt_mask = default_collate([b['txt_mask'] for b in batch])
+    batch_vis_input = nn.utils.rnn.pad_sequence(batch_vis_input, batch_first=True)
+
     batch_map_gt = default_collate([b['map_gt'] for b in batch])
     batch_anno_idxs = default_collate([b['anno_idx'] for b in batch])
-    batch_vis_feats = default_collate([b['visual_input'] for b in batch])
     batch_duration = default_collate([b['duration'] for b in batch])
 
     max_num_clips = max([map_gt.shape[-1] for map_gt in batch_map_gt])
