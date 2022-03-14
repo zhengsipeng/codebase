@@ -86,17 +86,21 @@ def eval_predictions(segments, data, config, verbose=True):
 
 
 def display_results(eval_result, miou, title=None, config=None):
-    tious = [float(i) for i in config.TEST.TIOU.split(',')] if isinstance(config.TEST.TIOU,str) else [config.TEST.TIOU]
-    recalls = [int(i) for i in config.TEST.RECALL.split(',')] if isinstance(config.TEST.RECALL,str) else [config.TEST.RECALL]
+    
+    tious = [float(i) for i in config.TIOU.split(',')] if isinstance(config.TIOU,str) else [config.TIOU]
+    recalls = [int(i) for i in config.RECALL.split(',')] if isinstance(config.RECALL,str) else [config.RECALL]
 
     display_data = [['Rank@{},mIoU@{}'.format(i,j) for i in recalls for j in tious]+['mIoU']]
     eval_result = eval_result*100
     miou = miou*100
+    
     display_data.append(['{:.02f}'.format(eval_result[j][i]) for i in range(len(recalls)) for j in range(len(tious))]
                         +['{:.02f}'.format(miou)])
+
     table = AsciiTable(display_data, title)
     for i in range(len(tious)*len(recalls)):
         table.justify_columns[i] = 'center'
+
     return table.table
 
 

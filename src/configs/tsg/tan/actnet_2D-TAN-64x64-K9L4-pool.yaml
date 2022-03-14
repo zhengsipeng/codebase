@@ -65,12 +65,12 @@ TRAINING:
         'PATIENCE': 20,
         'CONTINUE': false
         }
-    CLIP_GRAD: false
+    CLIP_GRAD: true
     weight_decay: 0.0000
 
-    save_dir: "outputs/tsg/tan/2D-TAN-conv"
-    checkpoint_step: 10000
-    save_step: 5000
+    save_dir: "outputs/tsg/tan/actnet_2D-TAN-pool"
+    checkpoint_step: 3000
+    save_step: 1000
     print_step: 50
     eval_step: 200
 
@@ -92,7 +92,7 @@ TAN:
       STRIDE: 4
 
   PROP_MODULE:
-    NAME: SparsePropConv
+    NAME: SparsePropMaxPool
     PARAMS:
       HIDDEN_SIZE: 512
       NUM_SCALE_LAYERS: [16,8,8]

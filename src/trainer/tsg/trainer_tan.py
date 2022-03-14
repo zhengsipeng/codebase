@@ -8,9 +8,9 @@ import torch
 import deepspeed
 from torch.utils.data import DataLoader
 import torch.distributed as dist
-from src.models.tsg.eval import eval_predictions
+from src.models.tsg.eval import eval_predictions, display_results
 from src.trainer.basic_trainer import BasicTrainer
-from src.utils.dist import concat_all_gather
+from src.utils.dist import concat_all_gather, master_process
 from src.utils.logger import LOGGER
 
 
@@ -53,8 +53,6 @@ class Trainer(BasicTrainer):
                 prediction, map_mask = self.model(batch_word_vectors, batch_txt_mask, batch_vis_input)
                 loss, joint_prob = self.criterion(prediction, map_mask, batch_map_gt)
                 self.model.backward(loss)
-                if self.config.TRAINING.CLIP_GRAD:
-                    torch.nn.utils.clip_grad_norm_(self.model.parameters(), 10)
                 self.model.step()
                 self.global_step += 1
                 self.scheduler.step_update(self.global_step)
@@ -110,6 +108,9 @@ class Trainer(BasicTrainer):
 
         annotations = dataloader_val.dataset.annotations
         eval_result, miou = eval_predictions(all_prediction.cpu().numpy(), annotations, self.config.TEST, verbose=False)
+        if master_process(self.args):
+            eval_table = display_results(eval_result, miou, 'performance on validation set\n', self.config.TEST)
+            LOGGER.info(eval_table)
         import pdb; pdb.set_trace()
 
 
