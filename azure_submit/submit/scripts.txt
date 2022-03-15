@@ -1,0 +1,1 @@
+python submit.py --name "actnet_zsp_mvit" --cluster "videopretrain" --node_count 1 --command "python src/task/run_tsg.py --deepspeed --deepspeed_config src/configs/ds_config.json --deepspeed_mpi --distributed --config src/configs/actnetloc_task/actnetloc_test_local.yaml --fp16" --branch main
