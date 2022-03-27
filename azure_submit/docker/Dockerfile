@@ -118,9 +118,11 @@ RUN pip install mpi4py
 RUN pip install ftfy regex tqdm pyspng h5py timm matplotlib
 RUN pip install decord lpips ujson einops opencv-python lpips ujson einops
 RUN pip install git+https://github.com/openai/CLIP.git
+RUN pip install git+https://github.com/facebookresearch/fvcore
+RUN pip install git+https://github.com/facebookresearch/fairscale
+RUN python -m pip install detectron2 -f https://dl.fbaipublicfiles.com/detectron2/wheels/cu111/torch1.10/index.html
 
-
-RUN pip install jsonlines\
+RUN pip install \
 deepspeed==0.5.8 \
 transformers==4.15.0 \
 timm==0.4.12 \
@@ -136,6 +138,15 @@ pytorchvideo \
 moviepy \
 iopath \
 psutil \
+iopath \
+psutil \
+matplotlib \
+simplejson \
+pandas \
+opencv-python \
+av  \
+scikit-learn
+
 
 RUN export CUDA_HOME="/usr/local/cuda"
 RUN echo "azureml dockerfile finished!"
